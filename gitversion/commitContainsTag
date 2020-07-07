@@ -1,0 +1,33 @@
+#!/bin/bash
+
+# This is part of bb-gitversion
+# https://github.com/elbb/bb-gitversion
+#
+# usage: ./commitContainsTag.sh <git repo path> <git commit id>
+# example: ./commitContainsTag.sh /git 0f2bea9459e4aaa4a3338a0ba0f726e3f1967e2b
+#
+# This script checks if the passed git commit id contains a tag.
+#
+# Returns 0 if a commit contains a tag
+# Returns 1 if a commit does not contain a tag
+# Returns 127 if illegal number of arguments
+# Returns 128 if path was not a valid git repo
+
+if [ "$#" -ne 2 ]; then
+    echo "Illegal number of parameters"
+    exit 127
+fi
+
+GIT_REPO=${1}
+COMMIT_ID=${2}
+IGNORED=$(git -C ${GIT_REPO} status)
+if [ $? == 0 ]; then
+    TAGS=$(git -C ${GIT_REPO} tag --contains ${COMMIT_ID})
+    if [ -z ${TAGS} ]; then
+        exit 1
+    else
+        exit 0
+    fi
+else
+    exit 128
+fi

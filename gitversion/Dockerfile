@@ -2,7 +2,7 @@ FROM gittools/gitversion:5.1.4-linux-ubuntu-18.04-netcoreapp3.1
 
 # install necessary tooling for jq installation
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends wget gpg gnupg-agent python-jinja2 && \
+    apt-get install -y --no-install-recommends wget gpg gnupg-agent python-jinja2 git && \
     rm -rf /var/lib/apt/lists/*
 
 ENV JQ_VERSION='1.5'
@@ -19,7 +19,6 @@ RUN wget --no-check-certificate https://raw.githubusercontent.com/stedolan/jq/ma
     rm -f /tmp/jq-linux64.asc && \
     rm -f /tmp/jq-linux64
 
-
 # copy GitVersion configuration
 COPY GitVersion.yaml /tools/GitVersion.yaml
 
@@ -33,5 +32,9 @@ COPY  templates  /tools/templates
 # copy script for semantic versioning generation
 COPY entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
+
+# copy scripts
+COPY commitContainsTag /usr/local/bin/commitContainsTag
+RUN chmod +x /usr/local/bin/commitContainsTag
 
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
